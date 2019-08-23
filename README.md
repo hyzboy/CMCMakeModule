@@ -12,9 +12,10 @@ CM CMake module file
   
    set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMCMakeModule)
   
-   #include(math)
-   #use_mgl(${CMAKE_CURRENT_SOURCE_DIR}/3rdpty/MathGeoLib)
+   include(math)
+   use_mgl(${CMAKE_CURRENT_SOURCE_DIR}/3rdpty/MathGeoLib)
   
    include(use_cm_module)
    use_cm_module(Core)
+   use_cm_module(Platform)
 ```
