@@ -4,9 +4,13 @@ CM CMake module file
 ## use
 
  - create a project
- - run "git submodule add https://github.com/hyzboy/CMCMakeModule" in project root directory.
- - run "git submodule add https://github.com/hyzboy/CMCore"
- - run "git submodule add https://github.com/hyzboy/CMPlatform"
+ - switch to the project root directory using the console/bash/GIT Bash
+ - run the following command
+```
+ git submodule add https://github.com/hyzboy/CMCMakeModule
+ git submodule add https://github.com/hyzboy/CMCore
+ git submodule add https://github.com/hyzboy/CMPlatform
+```
  - add the following code to project CMakeLists.txt
 ``` 
    cmake_minimum_required(VERSION 3.0)
