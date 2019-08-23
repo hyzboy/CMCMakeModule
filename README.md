@@ -11,16 +11,28 @@ CM CMake module file
 ``` 
    cmake_minimum_required(VERSION 3.0)
    
-   project(SampleProject)
+   project(YourProject)
    
    set_property(GLOBAL PROPERTY USE_FOLDERS ON)
   
    set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMCMakeModule)
   
+   #if you use Vulkan API
+   include(vulkan)
+
    include(math)
    use_mgl(${CMAKE_CURRENT_SOURCE_DIR}/3rdpty/MathGeoLib)
   
    include(use_cm_module)
    use_cm_module(Core)
    use_cm_module(Platform)
+   
+   ...
+   
+   add_executable(YourProgram ...)
+   target_link_libraries(YourProgram CMCore CMPlatform)
+   
+   #if you use vulkan render
+   target_link_libraried(YourProject ${RENDER_LIBRARY} ${Vulkan_LIBRARIES})
+   
 ```
