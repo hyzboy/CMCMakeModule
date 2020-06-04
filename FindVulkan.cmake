@@ -42,6 +42,8 @@ if(WIN32)
         "$ENV{VULKAN_SDK}/Lib"
         "$ENV{VULKAN_SDK}/Bin"
         )
+
+    set(Vulkan_LIBRARIES_DIR $ENV{VULKAN_SDK}/Lib)
   elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
     find_library(Vulkan_LIBRARY
       NAMES vulkan-1
@@ -50,6 +52,8 @@ if(WIN32)
         "$ENV{VULKAN_SDK}/Bin32"
         NO_SYSTEM_ENVIRONMENT_PATH
         )
+
+    set(Vulkan_LIBRARIES_DIR $ENV{VULKAN_SDK}/Lib32)
   endif()
 else()
     find_path(Vulkan_INCLUDE_DIR
@@ -60,6 +64,8 @@ else()
       NAMES vulkan
       PATHS
         "$ENV{VULKAN_SDK}/lib")
+
+    set(Vulkan_LIBRARIES_DIR $ENV{VULKAN_SDK}/Lib)
 endif()
 
 set(Vulkan_LIBRARIES ${Vulkan_LIBRARY})
