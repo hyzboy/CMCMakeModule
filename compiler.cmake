@@ -8,7 +8,6 @@
 
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++14")
 
-    add_compile_options(/arch:AVX2)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
 ELSE()
@@ -20,12 +19,10 @@ ELSE()
         ENDIF()
 
         if(USE_CLANG)
-            SET(CMAKE_C_COMPILER clang)
-            SET(CMAKE_CXX_COMPILER clang++)
+            SET(CMAKE_C_COMPILER /usr/bin/clang)
+            SET(CMAKE_CXX_COMPILER /usr/bin/clang++)
         endif()
     ENDIF()
-
-    add_compile_options(-mavx)
 
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
     SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
