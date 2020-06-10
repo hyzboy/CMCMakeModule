@@ -1,4 +1,4 @@
-macro(fix_project_version)
+﻿macro(fix_project_version)
 if (NOT PROJECT_VERSION_PATCH)
     set(PROJECT_VERSION_PATCH 0)
 endif()
@@ -75,3 +75,11 @@ endmacro()
 init_os_bundle()
 init_qt()
 fix_win_compiler()
+
+set(QT_MIN_VERSION "5.14.0")
+find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS Core Gui Widgets)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+# Set additional project information
+set(COMPANY "hyzgame.com")
+set(COPYRIGHT "Copyright (c) 1997-2020 hyzgame.com. All rights reserved.")
