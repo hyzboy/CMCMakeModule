@@ -33,15 +33,15 @@ ELSE()
             SET(CMAKE_CXX_COMPILER /usr/bin/clang++)
         endif()
     ENDIF()
-    
+
     OPTION(USE_CHAR8_T OFF)
-    
+
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
+
     IF(USE_CHAR8_T)
-        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++2a -fchar8_t")
-        SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -fchar8_t")
-    ELSE()
-        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-        SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
+        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fchar8_t")
+        SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fchar8_t")
     ENDIF()
 
     SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb3")
