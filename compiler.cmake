@@ -1,4 +1,4 @@
-﻿IF(WIN32)
+IF(WIN32)
 
     if(MINGW)
         SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -std=c99 -g -fchar8_t")
@@ -14,8 +14,6 @@
 
         SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MD")
         SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
-
-        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
 
         add_definitions(-D_CRT_SECURE_NO_WARNINGS)
     endif()
