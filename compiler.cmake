@@ -8,6 +8,7 @@ IF(WIN32)
         SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++2a -O2 -fchar8_t")
 
         add_definitions(-D_WIN32_WINNT=0x0601)
+
     else(MSVC)
         SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MDd")
         SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
@@ -16,6 +17,15 @@ IF(WIN32)
         SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
 
         add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+
+        add_compile_options(/wd4244)    # ->int     精度丢失
+        add_compile_options(/wd4305)    # ->float   精度丢失
+        add_compile_options(/wd4311)    # template
+        add_compile_options(/wd4800)    # ->bool    性能损失
+        add_compile_options(/wd4804)    # unsafe compare
+        add_compile_options(/wd4805)    # unsafe compare
+        add_compile_options(/wd4819)    # ansi->unicode
+        add_compile_options(/wd4996)    # sprintf/sscanf unsafe
     endif()
 
 ELSE()
