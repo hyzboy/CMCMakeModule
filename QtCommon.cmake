@@ -76,8 +76,8 @@ init_os_bundle()
 init_qt()
 fix_win_compiler()
 
-set(QT_MIN_VERSION "6.0.0")
-find_package(Qt6 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS Core Gui Widgets)
+set(QT_MIN_VERSION "5.14.0")
+find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS Core Gui Widgets)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Set additional project information
