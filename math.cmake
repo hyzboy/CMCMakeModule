@@ -1,5 +1,9 @@
 macro(use_glm GLM_PATH)
 
+    add_definitions(-DGLM_FORCE_RADIANS)
+    add_definitions(-DGLM_FORCE_DEPTH_ZERO_TO_ONE)
+    add_definitions(-DGLM_ENABLE_EXPERIMENTAL)
+
     include_directories(${GLM_PATH})
 
     set(GLM_SOURCE_PATH ${GLM_PATH}/glm)
