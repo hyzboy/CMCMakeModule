@@ -14,7 +14,12 @@
         </asmv3:windowsSettings>
         <asmv3:windowsSettings xmlns="http://schemas.microsoft.com/SMI/2019/WindowsSettings">
             <activeCodePage>UTF-8</activeCodePage>
-        </asmv3:windowsSettings>
+        </asmv3:windowsSettings><windowsSettings>
+        <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">PerMonitorV2</dpiAwareness>
+        <!-- Un-comment the line below to enable GDI-scaling in this project. This will enable text -->
+        <!-- to render crisply in DPI-unaware contexts -->
+        <!--<gdiScaling xmlns="http://schemas.microsoft.com/SMI/2017/WindowsSettings">true</gdiScaling>-->
+    </windowsSettings>
     </asmv3:application>
 
 </assembly>
