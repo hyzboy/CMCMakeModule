@@ -12,3 +12,14 @@ macro(add_cm_library module_name project_folder)
     set_property(TARGET ${module_name} PROPERTY FOLDER ${project_folder})
 
 endmacro()
+
+macro(add_cm_plugin module_name project_folder)
+    message("Create Plug-In <" ${module_name} "> Project Folder <" ${project_folder} ">" )
+
+    set(SOURCE_FILES "${ARGN}")
+
+    add_library(${module_name} SHARED ${SOURCE_FILES})
+
+    set_property(TARGET ${module_name} PROPERTY FOLDER ${project_folder})
+
+endmacro()
