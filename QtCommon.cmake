@@ -82,4 +82,6 @@ find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS Core Gui Widgets)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Set additional project information
 set(COMPANY "hyzgame.com")
-set(COPYRIGHT "Copyright (c) 1997-2020 hyzgame.com. All rights reserved.")
+set(COPYRIGHT "Copyright (c) 1997-2022 hyzgame.com. All rights reserved.")
+
+add_definitions(-D_USE_MATH_DEFINES)
