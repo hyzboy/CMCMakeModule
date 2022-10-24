@@ -14,6 +14,16 @@ add_definitions(-DHGL_COMPILE_CXX_FLAGS="${CMAKE_CXX_FLAGS}")
 
 add_definitions(-DCMAKE_VERSION="${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 
+if(MSVC)
+add_definitions(-DHGL_WINDOWS_SDK_VERSION="${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}")
+
+message("VS Platform Name: " ${CMAKE_VS_PLATFORM_NAME})
+message("VS Platform toolset: " ${CMAKE_VS_PLATFORM_TOOLSET})
+message("VS Platform toolset host arch: " ${CMAKE_VS_PLATFORM_TOOLSET_HOST_ARCHITECTURE})
+message("VS Platform toolset version: " ${CMAKE_VS_PLATFORM_TOOLSET_VERSION})
+
+endif()
+
 MESSAGE("C Compile Features: " ${CMAKE_C_COMPILE_FEATURES})
 MESSAGE("C++ Compile Features: " ${CMAKE_CXX_COMPILE_FEATURES})
 
