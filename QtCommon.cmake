@@ -85,3 +85,6 @@ set(COMPANY "hyzgame.com")
 set(COPYRIGHT "Copyright (c) 1997-2022 hyzgame.com. All rights reserved.")
 
 add_definitions(-D_USE_MATH_DEFINES)
+
+SET(CM_QT_EXTRA_STYLE_RC_FILES  ${CMAKE_CURRENT_SOURCE_DIR}/CMQT/src/style/bb10style/qbb10brightstyle.qrc
+                                ${CMAKE_CURRENT_SOURCE_DIR}/CMQT/src/style/bb10style/qbb10darkstyle.qrc)

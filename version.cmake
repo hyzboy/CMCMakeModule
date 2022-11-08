@@ -19,8 +19,6 @@ add_definitions(-DHGL_WINDOWS_SDK_VERSION="${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VE
 
 message("VS Platform Name: " ${CMAKE_VS_PLATFORM_NAME})
 message("VS Platform toolset: " ${CMAKE_VS_PLATFORM_TOOLSET})
-message("VS Platform toolset host arch: " ${CMAKE_VS_PLATFORM_TOOLSET_HOST_ARCHITECTURE})
-message("VS Platform toolset version: " ${CMAKE_VS_PLATFORM_TOOLSET_VERSION})
 
 endif()
 
