@@ -77,12 +77,7 @@ IF(CM_BUILD_QT)
         SET(SUPPORTED_QT_VERSION "Auto" 5 6)
         SET_PROPERTY(CACHE CM_QT_MAJOR_VERSION PROPERTY STRINGS ${SUPPORTED_QT_VERSION})
 
-        IF(NOT CM_QT_MAJOR_VERSION STREQUAL "Auto")
-            IF(NOT CM_QT_MAJOR_VERSION IN_LIST SUPPORTED_QT_VERSION)
-                message(FATAL_ERROR "Supported Qt versions are \"${SUPPORTED_QT_VERSIONS}\"."
-                        " But CMake_QT_MAJOR_VERSION is set to ${CM_QT_MAJOR_VERSION}.")
-            endif()
-        ELSE()
+        IF(CM_QT_MAJOR_VERSION STREQUAL "Auto")
             find_package(Qt6Widgets QUIET)
             if(NOT Qt6Widgets_FOUND)
                 find_package(Qt5Widgets QUIET)
