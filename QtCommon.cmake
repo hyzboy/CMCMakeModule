@@ -72,19 +72,61 @@ macro(init_qt)
     set(CMAKE_AUTOUIC ON) # UI files
 endmacro()
 
-init_os_bundle()
-init_qt()
-fix_win_compiler()
+IF(CM_BUILD_QT)
+        SET(CM_QT_MAJOR_VERSION "Auto" CACHE STRING "Choose a version of Qt")
+        SET(SUPPORTED_QT_VERSION "Auto" 5 6)
+        SET_PROPERTY(CACHE CM_QT_MAJOR_VERSION PROPERTY STRINGS ${SUPPORTED_QT_VERSION})
 
-set(QT_MIN_VERSION "5.14.0")
-find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS Core Gui Widgets)
+        IF(NOT CM_QT_MAJOR_VERSION STREQUAL "Auto")
+            IF(NOT CM_QT_MAJOR_VERSION IN_LIST SUPPORTED_QT_VERSION)
+                message(FATAL_ERROR "Supported Qt versions are \"${SUPPORTED_QT_VERSIONS}\"."
+                        " But CMake_QT_MAJOR_VERSION is set to ${CM_QT_MAJOR_VERSION}.")
+            endif()
+        ELSE()
+            find_package(Qt6Widgets QUIET)
+            if(NOT Qt6Widgets_FOUND)
+                find_package(Qt5Widgets QUIET)
+                if(NOT Qt5Widgets_FOUND)
+                    message(FATAL_ERROR "Could not find a valid Qt installation.")
+                else()
+                    set(CM_QT_MAJOR_VERSION 5)
+                endif()
+            else()
+                set(CM_QT_MAJOR_VERSION 6)
+            endif()
+        ENDIF()
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-# Set additional project information
-set(COMPANY "hyzgame.com")
-set(COPYRIGHT "Copyright (c) 1997-2022 hyzgame.com. All rights reserved.")
+        add_definitions("-DHGL_QT=${CM_QT_MAJOR_VERSION}")
 
-add_definitions(-D_USE_MATH_DEFINES)
+        if(CM_QT_MAJOR_VERSION VERSION_EQUAL "6")
+            set(QT_MIN_VERSION "6.0.0")
 
-SET(CM_QT_EXTRA_STYLE_RC_FILES  ${CMAKE_CURRENT_SOURCE_DIR}/CMQT/src/style/bb10style/qbb10brightstyle.qrc
-                                ${CMAKE_CURRENT_SOURCE_DIR}/CMQT/src/style/bb10style/qbb10darkstyle.qrc)
+            include_directories(${Qt6Core_INCLUDES})
+            add_definitions(${Qt6Core_DEFINITIONS})
+        elseif(CM_QT_MAJOR_VERSION VERSION_EQUAL "5")
+            set(QT_MIN_VERSION "5.14.0")
+
+            include_directories(${Qt5Core_INCLUDES})
+            add_definitions(${Qt5Core_DEFINITIONS})
+        else()
+            SET(CM_QT_MAJOR_VERSION "0")
+        endif()
+
+        init_os_bundle()
+        init_qt()
+        fix_win_compiler()
+
+        find_package(Qt${CM_QT_MAJOR_VERSION} ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS Core Gui Widgets)
+
+        set(CMAKE_INCLUDE_CURRENT_DIR ON)
+        # Set additional project information
+        set(COMPANY "hyzgame.com")
+        set(COPYRIGHT "Copyright (c) 1997-2022 hyzgame.com. All rights reserved.")
+
+        IF(CM_QT_EXTRA_STYLE)
+            add_definitions("-DUSE_EXTRA_QT_STYLE")
+            SET(CM_QT_EXTRA_STYLE_RC_FILES  ${CMAKE_CURRENT_SOURCE_DIR}/CMQT/src/style/bb10style/qbb10brightstyle.qrc
+                                            ${CMAKE_CURRENT_SOURCE_DIR}/CMQT/src/style/bb10style/qbb10darkstyle.qrc)
+        ENDIF()
+
+ENDIF(CM_BUILD_QT)
