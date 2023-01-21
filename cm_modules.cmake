@@ -5,6 +5,7 @@ macro(add_cm_library module_name project_folder)
 
     IF(WIN32)
         add_library(${module_name} STATIC ${SOURCE_FILES})
+        target_link_libraries(${module_name} PRIVATE ${HGL_MATH_LIB})
     ELSE()
         add_library(${module_name} SHARED ${SOURCE_FILES})
     ENDIF(WIN32)
