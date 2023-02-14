@@ -8,8 +8,9 @@ IF(WIN32)
         SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++2a -O2 -fchar8_t")
 
         add_definitions(-D_WIN32_WINNT=0x0601)
+    endif()
 
-    else(MSVC)
+    if(MSVC)
 
         OPTION(MSVC_USE_DLL "use MSVC DLL" ON)
 
