@@ -14,8 +14,8 @@ IF(WIN32)
 
         OPTION(MSVC_USE_DLL "use MSVC DLL" ON)
 
-        SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c11")
-        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++14")
+        SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c17 /arch:AVX512")
+        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++20 /arch:AVX512")
 
         if(MSVC_USE_DLL)
             SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MDd")
