@@ -15,7 +15,14 @@ IF(WIN32)
         OPTION(MSVC_USE_DLL "use MSVC DLL" ON)
 
         SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c17 /arch:AVX512")
-        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++20 /arch:AVX512")
+        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c17 /std:c++20 /arch:AVX512")
+
+        OPTION(MSVC_USE_fsanitize "USE fsanitize" OFF)
+
+        if(MSVC_USE_fsanitize)
+            SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /fsanitize=address")
+            SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fsanitize=address")
+        endif()
 
         if(MSVC_USE_DLL)
             SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MDd")
