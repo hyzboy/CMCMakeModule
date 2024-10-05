@@ -12,6 +12,8 @@ IF(WIN32)
 
     if(MSVC)
 
+        find_package(tsl-robin-map CONFIG REQUIRED)
+
         OPTION(MSVC_USE_DLL "use MSVC DLL" ON)
 
         SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c17 /arch:AVX2 /fp:fast /fp:except-")
