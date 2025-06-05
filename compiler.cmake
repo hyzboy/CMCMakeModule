@@ -23,6 +23,13 @@ IF(WIN32)
 
         OPTION(MSVC_USE_fsanitize "USE fsanitize" OFF)
 
+        OPTION(MSVC_USE_SecurityDevlopmentLiftCycle "use Security Development Lifecycle (SDL)" OFF)
+
+        if(MSVC_USE_SecurityDevlopmentLiftCycle)
+            SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /sdl")
+            SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /sdl")
+        endif()
+
         if(MSVC_USE_fsanitize)
             SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /fsanitize=address")
             SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fsanitize=address")
