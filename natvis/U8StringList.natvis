@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="hgl::U8StringList">
+    <DisplayString>Count = {GetCount()}</DisplayString>
+    <Expand>
+      <Item Name="[Size]">GetCount()</Item>
+      <ArrayItems>
+        <Size>GetCount()</Size>
+        <ValuePointer>GetData()</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+</AutoVisualizer>
