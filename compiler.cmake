@@ -2,13 +2,13 @@ IF(WIN32)
 
     if(MINGW)
 
-        add_compile_options(-mavx2 -fchar8_t)
+        add_compile_options(-mavx2 -fchar8_t -ffast-math)
 
         SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -std=c99 -g")
         SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++2a -g -Wall")
 
-        SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -std=c99 -O2")
-        SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++2a -O2")
+        SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -std=c99 -O3")
+        SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++2a -O3")
 
         add_definitions(-D_WIN32_WINNT=0x0601)
     endif()
@@ -78,7 +78,7 @@ ELSE()
         endif()
     ENDIF()
 
-    add_compile_options(-mavx2 -fchar8_t)
+    add_compile_options(-mavx2 -fchar8_t -ffast-math)
 
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
     SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
@@ -86,8 +86,8 @@ ELSE()
     SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb3")
     SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -ggdb3")
 
-    SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Ofast")
-    SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast")
+    SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3")
+    SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 ENDIF()
 
 MESSAGE("C Compiler: " ${CMAKE_C_COMPILER})
