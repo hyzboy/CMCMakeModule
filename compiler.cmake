@@ -1,6 +1,10 @@
 # Option: use static C runtime (define once, apply per-toolchain)
 option(USE_STATIC_CRT "Use static C runtime (MSVC: /MT, others: -static-libgcc -static-libstdc++)" ON)
 
+# Sanitizers (cross-toolchain toggles)
+option(ENABLE_ASAN "Enable AddressSanitizer on supported compilers" OFF)
+option(ENABLE_UBSAN "Enable UndefinedBehaviorSanitizer on supported compilers" OFF)
+
 # Global language standards (prefer CMake variables over hardcoded -std or /std flags)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -11,26 +15,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 IF(WIN32)
-
-    if(MINGW)
-        add_compile_options(-mavx2 -fchar8_t -ffast-math)
-
-        SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g")
-        SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -Wall")
-
-        SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3")
-        SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
-
-        add_definitions(-D_WIN32_WINNT=0x0601)
-
-        # Apply static runtime for MinGW when requested
-        if(USE_STATIC_CRT)
-            message(STATUS "Using static libgcc/libstdc++ on MinGW toolchain")
-            set(CMAKE_EXE_LINKER_FLAGS   "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++")
-            set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static-libgcc -static-libstdc++")
-            set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -static-libgcc -static-libstdc++")
-        endif()
-    endif()
 
     if(MSVC)
         find_package(tsl-robin-map CONFIG REQUIRED)
@@ -47,7 +31,6 @@ IF(WIN32)
         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_COMMON_FLAGS}")
 
         OPTION(MSVC_USE_fsanitize "USE fsanitize" OFF)
-
         OPTION(MSVC_USE_SecurityDevlopmentLiftCycle "use Security Development Lifecycle (SDL)" OFF)
 
         if(MSVC_USE_SecurityDevlopmentLiftCycle)
@@ -55,9 +38,10 @@ IF(WIN32)
             SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /sdl")
         endif()
 
-        if(MSVC_USE_fsanitize)
+        if(MSVC_USE_fsanitize OR ENABLE_ASAN)
             SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /fsanitize=address")
             SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fsanitize=address")
+            message(STATUS "MSVC AddressSanitizer enabled")
         endif()
         
         # Configure MSVC runtime library according to USE_STATIC_CRT (CMake >= 3.15)
@@ -69,7 +53,7 @@ IF(WIN32)
             set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
         endif()
 
-        add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+        add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 
         add_compile_options(/wd4244)    # ->int     精度丢失
         add_compile_options(/wd4305)    # ->float   精度丢失
@@ -94,27 +78,48 @@ ELSE()
             SET(CMAKE_CXX_COMPILER /usr/bin/clang++)
         endif()
     ENDIF()
-
-    add_compile_options(-mavx2 -fchar8_t -ffast-math)
-
-    # Language standards are controlled by CMAKE_C_STANDARD/CMAKE_CXX_STANDARD above
-
-    SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb3")
-    SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -ggdb3")
-
-    SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3")
-    SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
-
-    # Apply static runtime for GCC/Clang on non-Windows (skip Apple/Android)
-    if(USE_STATIC_CRT AND NOT APPLE AND NOT ANDROID)
-        message(STATUS "Using static libgcc/libstdc++ on GCC/Clang toolchains")
-        set(CMAKE_EXE_LINKER_FLAGS   "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++")
-        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static-libgcc -static-libstdc++")
-        set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -static-libgcc -static-libstdc++")
-    endif()
 ENDIF()
 
-MESSAGE("C Compiler: " ${CMAKE_C_COMPILER})
-MESSAGE("C++ Compiler: " ${CMAKE_CXX_COMPILER})
-MESSAGE("C Flag: " ${CMAKE_C_FLAGS})
-MESSAGE("C++ Flag: " ${CMAKE_CXX_FLAGS})
+# Unified GNU/Clang settings (applies to GCC, Clang, AppleClang on all platforms)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
+    # Common ISA/FP
+    add_compile_options(-mavx2 -ffast-math)
+
+    # Config-specific optimization and debug info
+    if(WIN32)
+        add_compile_options($<$<CONFIG:Debug>:-g>)
+    else()
+        add_compile_options($<$<CONFIG:Debug>:-ggdb3>)
+    endif()
+    add_compile_options($<$<CONFIG:Release>:-O3>)
+
+    # MinGW specifics
+    if(MINGW)
+        add_compile_options($<$<CONFIG:Debug>:-Wall>)
+        add_compile_definitions(_WIN32_WINNT=0x0601)
+    endif()
+
+    # Sanitizers for GCC/Clang
+    if(ENABLE_ASAN)
+        add_compile_options(-fsanitize=address -fno-omit-frame-pointer)
+        add_link_options(-fsanitize=address)
+        message(STATUS "GCC/Clang AddressSanitizer enabled")
+    endif()
+    if(ENABLE_UBSAN)
+        add_compile_options(-fsanitize=undefined -fno-sanitize-recover=undefined)
+        add_link_options(-fsanitize=undefined)
+        message(STATUS "GCC/Clang UndefinedBehaviorSanitizer enabled")
+    endif()
+
+    # Static libgcc/libstdc++ when requested
+    if(USE_STATIC_CRT AND (MINGW OR (NOT WIN32 AND NOT APPLE AND NOT ANDROID)))
+        message(STATUS "Using static libgcc/libstdc++ on GNU/Clang toolchains")
+        add_link_options(-static-libgcc -static-libstdc++)
+    endif()
+endif()
+
+# Diagnostics
+message(STATUS "C Compiler: ${CMAKE_C_COMPILER}")
+message(STATUS "C++ Compiler: ${CMAKE_CXX_COMPILER}")
+message(STATUS "C Flags: ${CMAKE_C_FLAGS}")
+message(STATUS "C++ Flags: ${CMAKE_CXX_FLAGS}")
