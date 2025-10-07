@@ -43,7 +43,7 @@ IF(WIN32)
             SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fsanitize=address")
             message(STATUS "MSVC AddressSanitizer enabled")
         endif()
-        
+
         # Configure MSVC runtime library according to USE_STATIC_CRT (CMake >= 3.15)
         if(USE_STATIC_CRT)
             message(STATUS "Using static runtime on MSVC toolchain (/MT, /MTd)")
@@ -103,18 +103,60 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
     if(ENABLE_ASAN)
         add_compile_options(-fsanitize=address -fno-omit-frame-pointer)
         add_link_options(-fsanitize=address)
-        message(STATUS "GCC/Clang AddressSanitizer enabled")
+        if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            message(STATUS "Clang AddressSanitizer enabled")
+        else()
+            message(STATUS "GCC AddressSanitizer enabled")
+        endif()
     endif()
     if(ENABLE_UBSAN)
         add_compile_options(-fsanitize=undefined -fno-sanitize-recover=undefined)
         add_link_options(-fsanitize=undefined)
-        message(STATUS "GCC/Clang UndefinedBehaviorSanitizer enabled")
+        if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            message(STATUS "Clang UndefinedBehaviorSanitizer enabled")
+        else()
+            message(STATUS "GCC UndefinedBehaviorSanitizer enabled")
+        endif()
     endif()
 
-    # Static libgcc/libstdc++ when requested
+    # Static libgcc/libstdc++ when requested - differentiate between GCC and Clang
     if(USE_STATIC_CRT AND (MINGW OR (NOT WIN32 AND NOT APPLE AND NOT ANDROID)))
-        message(STATUS "Using static libgcc/libstdc++ on GNU/Clang toolchains")
-        add_link_options(-static-libgcc -static-libstdc++)
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+            # GCC: static link libgcc and libstdc++
+            message(STATUS "Using static libgcc/libstdc++ on GCC toolchain")
+            add_link_options(-static-libgcc -static-libstdc++)
+        elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            # Clang on Linux/BSD: may use libstdc++ (GNU) for GCC compatibility
+            message(STATUS "Using static runtime on Clang toolchain (Linux/BSD)")
+            add_link_options(-static-libgcc)
+
+            # Check if using libc++ or libstdc++
+            if(CMAKE_CXX_FLAGS MATCHES "-stdlib=libc\\+\\+")
+                # Using libc++, try to link it statically
+                add_link_options(-static-libstdc++ -lc++abi)
+            else()
+                # Using libstdc++ (GNU's C++ stdlib) for compatibility, link it statically
+                add_link_options(-static-libstdc++)
+            endif()
+        endif()
+    endif()
+
+    # Apple platforms (macOS/iOS): always use libc++ (mandated by Apple)
+    if(APPLE AND USE_STATIC_CRT)
+        message(STATUS "Apple platform: using libc++ (system default, static linking discouraged)")
+        # Note: On Apple platforms, static linking of system libraries is generally not recommended
+        # The system always provides libc++ dynamically; -static flags may cause issues
+    endif()
+
+    # Android NDK (r18+): always uses libc++ (LLVM)
+    if(ANDROID AND USE_STATIC_CRT)
+        message(STATUS "Android NDK: using libc++ (LLVM, NDK r18+ default)")
+        # Android NDK uses libc++_static or libc++_shared
+        # Set via ANDROID_STL in toolchain file, typically: c++_static or c++_shared
+        if(NOT ANDROID_STL)
+            set(ANDROID_STL "c++_static")
+            message(STATUS "Setting ANDROID_STL=c++_static for static C++ runtime")
+        endif()
     endif()
 endif()
 
