@@ -14,6 +14,31 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.15")
+    if(MSVC)
+        if(POLICY CMP0091)
+            cmake_policy(GET CMP0091 _cmp0091_policy)
+            if(_cmp0091_policy STREQUAL "NEW" AND DEFINED CMAKE_MSVC_RUNTIME_LIBRARY)
+                set(_runtime_lib ${CMAKE_MSVC_RUNTIME_LIBRARY})
+                message(STATUS "Using CMAKE_MSVC_RUNTIME_LIBRARY=${_runtime_lib}")
+            endif()
+        endif()
+
+        # 下面展示如何使用CMAKE_MSVC_RUNTIME_LIBRARY来区分使用不同的库
+        if(CMAKE_MSVC_RUNTIME_LIBRARY AND CMAKE_MSVC_RUNTIME_LIBRARY MATCHES "MultiThreaded[^D]")
+            # 使用静态运行时库 (MT/MTd)
+            # SET(AMD_COM_LIB_DEBUG "Compressonator_MTd.lib")
+            # SET(AMD_COM_LIB_RELEASE "Compressonator_MT.lib")
+            message(STATUS "Using static runtime: MT/MTd")
+        else()
+            # 使用DLL运行时库 (MD/MDd) - 默认
+            # SET(AMD_COM_LIB_DEBUG "Compressonator_MDd.lib")
+            # SET(AMD_COM_LIB_RELEASE "Compressonator_MD.lib")
+            message(STATUS "Using DLL runtime: MD/MDd")
+        endif()
+    endif(msvc)
+endif(CMAKE_VERSION VERSION_GREATER_EQUAL "3.15")
+
 # C++20 Module support (requires CMake 3.28+)
 # Check CMake version for module support
 if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.28")
