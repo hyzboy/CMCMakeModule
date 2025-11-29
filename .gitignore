@@ -1,0 +1,36 @@
+# Build directories
+build/
+out/
+cmake-build-*/
+
+# IDE files
+.idea/
+.vscode/
+*.suo
+*.user
+*.sln
+*.vcxproj*
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# User-specific CMake presets (don't commit personal configurations)
+CMakeUserPresets.json
+
+# Compiled files
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
+*.dylib
+*.exe
+
+# Module files
+*.ifc
+*.pcm
+modules/

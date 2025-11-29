@@ -275,16 +275,8 @@ jobs:
 
 | 文件 | 位置 | 问题 | 优先级 | 状态 |
 |------|------|------|--------|------|
-| compiler.cmake | 第17行 | CMake 3.15 版本检查已过时 | 低 | 待处理 |
-| compiler.cmake | 第72/129行 | IF/ELSE 大小写不一致 | 低 | 待处理 |
 | compiler.cmake | 第89-91行 | C++20 模块标志应设为可选 | 中 | 待处理 |
-| vulkan.cmake | 第3-7行 | CMake 3.7 版本检查已过时 | 低 | 待处理 |
-| system_bit.cmake | 全文 | 大写命令需规范化 | 低 | 待处理 |
-| output_path.cmake | 全文 | 大写命令需规范化 | 低 | 待处理 |
-| QtCommon.cmake | 全文 | 大写命令需规范化 | 低 | 待处理 |
-| - | - | 缺少 .gitignore | 低 | 待处理 |
 | - | - | 缺少 CMakeLists.txt 入口 | 中 | 待处理 |
-| - | - | 缺少 CMakePresets.json | 低 | 待处理 |
 
 ---
 
@@ -296,6 +288,11 @@ jobs:
 - [x] COPYING-CMAKE-SCRIPTS: 添加 BSD 许可证文件
 - [x] 全局: 将 `add_definitions()` 替换为 `add_compile_definitions()`
 - [x] vulkan.cmake: 使用 CMake 内置 FindVulkan 模块
+- [x] 全局: 统一 CMake 命令为小写
+- [x] vulkan.cmake: 移除 CMake 3.7 版本检查
+- [x] compiler.cmake: 移除 CMake 3.15 版本检查
+- [x] CMakePresets.json: 添加现代 CMake Presets 支持
+- [x] .gitignore: 添加项目忽略文件
 
 ---
 
