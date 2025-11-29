@@ -7,15 +7,15 @@ message("Compile Flags: " ${CMAKE_C_FLAGS})
 message("C++ Compile Flags: " ${CMAKE_CXX_FLAGS})
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
-add_definitions(-DHGL_HOST_SYSTEM="${CMAKE_HOST_SYSTEM}")
+add_compile_definitions(HGL_HOST_SYSTEM="${CMAKE_HOST_SYSTEM}")
 
-add_definitions(-DHGL_COMPILE_C_FLAGS="${CMAKE_C_FLAGS}")
-add_definitions(-DHGL_COMPILE_CXX_FLAGS="${CMAKE_CXX_FLAGS}")
+add_compile_definitions(HGL_COMPILE_C_FLAGS="${CMAKE_C_FLAGS}")
+add_compile_definitions(HGL_COMPILE_CXX_FLAGS="${CMAKE_CXX_FLAGS}")
 
-add_definitions(-DCMAKE_VERSION="${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
+add_compile_definitions(CMAKE_VERSION="${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 
 if(MSVC)
-add_definitions(-DHGL_WINDOWS_SDK_VERSION="${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}")
+add_compile_definitions(HGL_WINDOWS_SDK_VERSION="${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}")
 
 message("VS Platform Name: " ${CMAKE_VS_PLATFORM_NAME})
 message("VS Platform toolset: " ${CMAKE_VS_PLATFORM_TOOLSET})
@@ -25,6 +25,7 @@ endif()
 MESSAGE("C Compile Features: " ${CMAKE_C_COMPILE_FEATURES})
 MESSAGE("C++ Compile Features: " ${CMAKE_CXX_COMPILE_FEATURES})
 
-# add_definitions(-DHGL_COMPILE_C_FEATURES="${CMAKE_C_COMPILE_FEATURES}")
-# add_definitions(-DHGL_COMPILE_CXX_FEATURES="${CMAKE_CXX_COMPILE_FEATURES}")
+# add_compile_definitions(HGL_COMPILE_C_FEATURES="${CMAKE_C_COMPILE_FEATURES}")
+# add_compile_definitions(HGL_COMPILE_CXX_FEATURES="${CMAKE_CXX_COMPILE_FEATURES}")
+
 

@@ -91,18 +91,18 @@ IF(CM_BUILD_QT)
             endif()
         ENDIF()
 
-        add_definitions("-DHGL_QT=${CM_QT_MAJOR_VERSION}")
+        add_compile_definitions("HGL_QT=${CM_QT_MAJOR_VERSION}")
 
         if(CM_QT_MAJOR_VERSION VERSION_EQUAL "6")
             set(QT_MIN_VERSION "6.0.0")
 
             include_directories(${Qt6Core_INCLUDES})
-            add_definitions(${Qt6Core_DEFINITIONS})
+            add_compile_definitions(${Qt6Core_DEFINITIONS})
         elseif(CM_QT_MAJOR_VERSION VERSION_EQUAL "5")
             set(QT_MIN_VERSION "5.14.0")
 
             include_directories(${Qt5Core_INCLUDES})
-            add_definitions(${Qt5Core_DEFINITIONS})
+            add_compile_definitions(${Qt5Core_DEFINITIONS})
         else()
             SET(CM_QT_MAJOR_VERSION "0")
         endif()
@@ -119,7 +119,7 @@ IF(CM_BUILD_QT)
         set(COPYRIGHT "Copyright (c) 1997-2022 hyzgame.com. All rights reserved.")
 
         IF(CM_QT_EXTRA_STYLE)
-            add_definitions("-DUSE_EXTRA_QT_STYLE")
+            add_compile_definitions("USE_EXTRA_QT_STYLE")
             SET(CM_QT_EXTRA_STYLE_RC_FILES  ${CMAKE_CURRENT_SOURCE_DIR}/CMQT/src/style/bb10style/qbb10brightstyle.qrc
                                             ${CMAKE_CURRENT_SOURCE_DIR}/CMQT/src/style/bb10style/qbb10darkstyle.qrc)
         ENDIF()
