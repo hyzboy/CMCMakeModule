@@ -14,33 +14,21 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.15")
-    if(MSVC)
-        if(POLICY CMP0091)
-            cmake_policy(GET CMP0091 _cmp0091_policy)
-            if(_cmp0091_policy STREQUAL "NEW" AND DEFINED CMAKE_MSVC_RUNTIME_LIBRARY)
-                set(_runtime_lib ${CMAKE_MSVC_RUNTIME_LIBRARY})
-                message(STATUS "Using CMAKE_MSVC_RUNTIME_LIBRARY=${_runtime_lib}")
-            endif()
-        endif()
+# CMake 3.20+ fully supports CMP0091, enable it unconditionally
+cmake_policy(SET CMP0091 NEW)
 
-        # 下面展示如何使用CMAKE_MSVC_RUNTIME_LIBRARY来区分使用不同的库
-        if(CMAKE_MSVC_RUNTIME_LIBRARY AND CMAKE_MSVC_RUNTIME_LIBRARY MATCHES "MultiThreaded[^D]")
-            # 使用静态运行时库 (MT/MTd)
-            # SET(AMD_COM_LIB_DEBUG "Compressonator_MTd.lib")
-            # SET(AMD_COM_LIB_RELEASE "Compressonator_MT.lib")
-            message(STATUS "Using static runtime: MT/MTd")
-        else()
-            # 使用DLL运行时库 (MD/MDd) - 默认
-            # SET(AMD_COM_LIB_DEBUG "Compressonator_MDd.lib")
-            # SET(AMD_COM_LIB_RELEASE "Compressonator_MD.lib")
-            message(STATUS "Using DLL runtime: MD/MDd")
-        endif()
+if(MSVC)
+    # Display runtime library info
+    if(CMAKE_MSVC_RUNTIME_LIBRARY AND CMAKE_MSVC_RUNTIME_LIBRARY MATCHES "MultiThreaded[^D]")
+        # Using static runtime (MT/MTd)
+        message(STATUS "Using static runtime: MT/MTd")
+    else()
+        # Using DLL runtime (MD/MDd) - default
+        message(STATUS "Using DLL runtime: MD/MDd")
     endif()
 endif()
 
 # C++20 Module support (requires CMake 3.28+)
-# Check CMake version for module support
 if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.28")
     message(STATUS "CMake version ${CMAKE_VERSION} supports C++20 modules")
     
@@ -74,18 +62,13 @@ if(WIN32)
     if(MSVC)
         find_package(tsl-robin-map CONFIG REQUIRED)
 
-        # Policy CMP0091 is NEW from top-level, so CMAKE_MSVC_RUNTIME_LIBRARY is honored
-        if(POLICY CMP0091)
-            cmake_policy(SET CMP0091 NEW)
-        endif()
-
         set(MSVC_COMMON_FLAGS "/Zc:preprocessor /arch:AVX2 /fp:fast /fp:except-")
 
         # Rely on CMAKE_C_STANDARD/CMAKE_CXX_STANDARD for language mode, only append common flags here
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MSVC_COMMON_FLAGS}")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_COMMON_FLAGS}")
 
-        # MSVC C++20 module specific flags
+        # MSVC C++20 module specific flags (requires CMake 3.28+)
         if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.28")
             # Enable module interface unit compilation
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /interface /ifcOutput ${CMAKE_CXX_MODULE_OUTPUT_DIRECTORY}")
@@ -105,7 +88,7 @@ if(WIN32)
             message(STATUS "MSVC AddressSanitizer enabled")
         endif()
 
-        # Configure MSVC runtime library according to USE_STATIC_CRT (CMake >= 3.15)
+        # Configure MSVC runtime library according to USE_STATIC_CRT
         if(USE_STATIC_CRT)
             message(STATUS "Using static runtime on MSVC toolchain (/MT, /MTd)")
             set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")

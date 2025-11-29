@@ -1,10 +1,5 @@
-# Use CMake's built-in FindVulkan module (available since CMake 3.7)
-# Falls back to custom FindVulkan.cmake for older CMake versions
-if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.7")
-    find_package(Vulkan REQUIRED)
-else()
-    include(FindVulkan)
-endif()
+# CMake 3.20+ has built-in FindVulkan module
+find_package(Vulkan REQUIRED)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_compile_definitions(VK_USE_PLATFORM_WIN32_KHR WIN32_LEAN_AND_MEAN)
@@ -19,15 +14,5 @@ else()
     message(FATAL_ERROR "Unsupported Vulkan Platform!")
 endif()
 
-# Use modern CMake target-based approach when available
-if(TARGET Vulkan::Vulkan)
-    # Modern CMake: use imported target directly
-    # Users should link with Vulkan::Vulkan instead of ${Vulkan_LIBRARIES}
-    message(STATUS "Vulkan found: using Vulkan::Vulkan imported target")
-else()
-    # Legacy fallback
-    include_directories(${Vulkan_INCLUDE_DIRS})
-    if(DEFINED Vulkan_LIBRARIES_DIR)
-        link_directories(${Vulkan_LIBRARIES_DIR})
-    endif()
-endif()
+# CMake 3.20+ always provides Vulkan::Vulkan imported target
+message(STATUS "Vulkan found: using Vulkan::Vulkan imported target")
