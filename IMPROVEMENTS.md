@@ -2,199 +2,254 @@
 
 本文档提供了对 CMCMakeModule 仓库的改进意见，按优先级和复杂度分阶段组织，便于逐步推进。
 
----
+## 项目技术限定
 
-## 阶段一：基础改进（低风险、高价值）
-
-### 1.1 README.md 完善
-
-**当前问题：**
-- README 内容较简单，缺乏详细说明
-- 存在拼写错误（第42行 `target_link_libraried` 应为 `target_link_libraries`）
-- 缺少模块功能说明和使用示例
-
-**改进建议：**
-- 添加各模块功能描述表格
-- 添加 CMake 版本要求说明
-- 添加更多使用示例
-- 添加贡献指南和许可证说明
-- 修正拼写错误
-
-### 1.2 添加 LICENSE 文件
-
-**当前问题：**
-- 缺少许可证文件
-- 部分 Find*.cmake 文件引用了 BSD 许可证但未提供
-
-**改进建议：**
-- 添加合适的开源许可证（如 MIT 或 BSD-3-Clause）
-- 添加被引用的 COPYING-CMAKE-SCRIPTS 文件
-
-### 1.3 添加 .gitignore 文件
-
-**当前问题：**
-- 缺少 .gitignore 文件
-
-**改进建议：**
-- 添加 .gitignore 排除常见的构建产物和IDE文件
+- **CMake 版本**: >= 3.20
+- **C++ 标准**: C++20
+- **指令集**: AVX2
 
 ---
 
-## 阶段二：代码质量改进（中等风险）
+## 阶段一：代码风格统一（低风险）
 
-### 2.1 CMake 代码风格统一
-
-**当前问题：**
-- 命令大小写不一致（IF/if, SET/set, ELSE/else 混用）
-- 注释语言不统一（中英文混合）
-- 缩进风格不一致
-
-**改进建议：**
-- 统一使用小写 CMake 命令（现代 CMake 风格）
-- 统一注释语言（建议英文）
-- 统一缩进风格（4空格或2空格）
-
-### 2.2 compiler.cmake 改进
+### 1.1 CMake 命令大小写规范化
 
 **当前问题：**
-- 第39行大小写错误：`endif(msvc)` 应为 `endif(MSVC)` 或 `endif()`
-- 第75行 `find_package(tsl-robin-map CONFIG REQUIRED)` 可能导致项目不可用（硬依赖第三方库）
-- 第89-91行的 MSVC C++20 模块标志可能会在非模块项目中导致编译错误
-- 一些编译选项（如 /arch:AVX2）可能在老旧硬件上无法运行
+- 命令大小写不一致（IF/if, SET/set, ELSE/else, ENDIF/endif 混用）
+- 现代 CMake 推荐使用小写命令
+
+**涉及文件：**
+- `compiler.cmake`: 多处 IF/ELSE/ENDIF/SET/OPTION 大写
+- `system_bit.cmake`: IF/ELSE/ENDIF/SET 大写
+- `output_path.cmake`: IF/ELSE/SET 大写
+- `QtCommon.cmake`: IF/ENDIF/SET 大写
+- `cm_modules.cmake`: IF/ENDIF 大写
 
 **改进建议：**
-```cmake
-# 将硬依赖改为可选依赖
-option(USE_TSL_ROBIN_MAP "Use tsl-robin-map for hash maps" OFF)
-if(USE_TSL_ROBIN_MAP)
-    find_package(tsl-robin-map CONFIG REQUIRED)
-endif()
-
-# AVX2 应该作为可选项
-option(ENABLE_AVX2 "Enable AVX2 instructions" ON)
-```
-
-### 2.3 version.cmake 改进
-
-**当前问题：**
-- 使用已过时的 `add_definitions()` 命令
-
-**改进建议：**
-- 使用现代 CMake 的 `add_compile_definitions()` 或 `target_compile_definitions()`
-
-### 2.4 math.cmake 改进
-
-**当前问题：**
-- 使用已过时的 `add_definitions()` 命令
-- 硬性要求 glm 库，可能导致项目不可用
-
-**改进建议：**
-- 改为可选依赖，或提供清晰的错误信息
-
----
-
-## 阶段三：功能增强（中等复杂度）
-
-### 3.1 添加 CMake 版本检查
-
-**改进建议：**
-- 在主模块入口添加最低版本要求检查
-- 对于高版本特性（如 C++20 模块支持）提供优雅的降级
-
-### 3.2 添加安装支持
-
-**当前问题：**
-- 没有 install() 规则
-- 无法作为系统级模块安装
-
-**改进建议：**
-- 添加 CMakeLists.txt 作为项目入口
-- 支持 `cmake --install` 和 `find_package(CMCMakeModule)`
-
-### 3.3 添加测试框架
-
-**当前问题：**
-- 没有任何测试验证模块功能
-
-**改进建议：**
-- 添加简单的 CMake 测试项目验证模块加载
-- 可使用 ctest 进行自动化测试
-
-### 3.4 Find*.cmake 模块改进
-
-**当前问题：**
-- FindVulkan.cmake 与 CMake 内置的可能冲突（CMake 3.7+ 已内置）
-- 应该优先使用 CMake 内置模块
-
-**改进建议：**
-```cmake
-# 优先使用 CMake 内置模块
-if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.7")
-    find_package(Vulkan)
-else()
-    # 回退到自定义实现
-    include(${CMAKE_CURRENT_LIST_DIR}/FindVulkan.cmake)
-endif()
-```
-
----
-
-## 阶段四：架构优化（高复杂度）
-
-### 4.1 模块化重构
-
-**当前问题：**
-- 模块之间耦合度较高
-- use_cm_module.cmake 隐式包含了多个模块
-
-**改进建议：**
-- 创建独立的模块接口
-- 允许用户选择性加载所需模块
-
-### 4.2 现代 CMake 最佳实践
-
-**改进建议：**
-- 使用 target-based 方式替代全局变量
-- 创建 IMPORTED 目标便于依赖管理
-- 使用生成器表达式替代条件编译
-
-示例：
 ```cmake
 # 旧方式
-add_definitions(-DHGL_64_BITS)
+IF(WIN32)
+    SET(OUTPUT_DIR "windows")
+ELSE()
+    SET(OUTPUT_DIR "linux")
+ENDIF()
 
-# 新方式
-add_library(hgl_config INTERFACE)
-target_compile_definitions(hgl_config INTERFACE HGL_64_BITS)
+# 现代 CMake 风格
+if(WIN32)
+    set(OUTPUT_DIR "windows")
+else()
+    set(OUTPUT_DIR "linux")
+endif()
 ```
 
-### 4.3 文档生成
+### 1.2 注释语言统一
 
-**改进建议：**
-- 添加 RST/Markdown 文档
-- 考虑使用 Sphinx 或 MkDocs 生成文档网站
+**当前问题：**
+- 中英文注释混用
+- 建议统一使用英文注释，便于国际化协作
+
+**涉及文件：**
+- `compiler.cmake`: 第27-37行、第119-126行含中文注释
 
 ---
 
-## 阶段五：持续集成（可选）
+## 阶段二：代码简化（基于 CMake 3.20+）
 
-### 5.1 添加 CI/CD 配置
+### 2.1 移除过时的版本检查
+
+**当前问题：**
+- 存在针对 CMake 3.7、3.15 等老版本的兼容代码
+- 项目已限定 CMake >= 3.20，这些检查已无意义
+
+**涉及文件及改进：**
+
+**vulkan.cmake:**
+```cmake
+# 当前代码（可简化）
+if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.7")
+    find_package(Vulkan REQUIRED)
+else()
+    include(FindVulkan)
+endif()
+
+# 简化为（CMake 3.20+ 必定支持内置 FindVulkan）
+find_package(Vulkan REQUIRED)
+```
+
+**compiler.cmake:**
+```cmake
+# 可移除的版本检查（第17行）
+if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.15")
+    # ... CMP0091 相关代码
+endif()
+
+# CMake 3.20+ 已完全支持 CMP0091，可直接使用
+cmake_policy(SET CMP0091 NEW)
+```
+
+### 2.2 删除不再需要的自定义模块
+
+**当前问题：**
+- `FindVulkan.cmake` 已被 CMake 内置模块替代
+- CMake 3.20+ 完全支持内置 Vulkan 查找
 
 **改进建议：**
-- 添加 GitHub Actions 工作流
-- 在多平台（Windows/Linux/macOS）测试模块
-- 添加 CMake 版本矩阵测试
+- 可以删除 `FindVulkan.cmake` 文件
+- 或保留作为文档参考，但标记为废弃
 
-示例 `.github/workflows/ci.yml`：
+### 2.3 使用现代 CMake Presets
+
+**改进建议：**
+- CMake 3.20+ 支持 `CMakePresets.json`
+- 可添加预设文件简化配置：
+
+```json
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "default",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_CXX_STANDARD": "20",
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "debug",
+      "inherits": "default",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_ASAN": "ON"
+      }
+    }
+  ]
+}
+```
+
+---
+
+## 阶段三：架构优化
+
+### 3.1 使用 INTERFACE 库封装配置
+
+**当前问题：**
+- 使用全局 `add_compile_definitions()` 和 `add_compile_options()`
+- 难以在项目间隔离配置
+
+**改进建议：**
+```cmake
+# 创建配置接口库
+add_library(cm_config INTERFACE)
+
+# 平台定义
+target_compile_definitions(cm_config INTERFACE
+    $<$<BOOL:${HGL_64_BITS}>:HGL_64_BITS>
+    $<$<BOOL:${HGL_32_BITS}>:HGL_32_BITS>
+)
+
+# AVX2 支持
+target_compile_options(cm_config INTERFACE
+    $<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>
+    $<$<CXX_COMPILER_ID:GNU,Clang>:-mavx2>
+)
+
+# 使用方式
+target_link_libraries(my_target PRIVATE cm_config)
+```
+
+### 3.2 模块入口文件
+
+**改进建议：**
+- 添加 `CMakeLists.txt` 作为项目入口
+- 便于作为子模块或 `FetchContent` 使用
+
+```cmake
+# CMakeLists.txt
+cmake_minimum_required(VERSION 3.20)
+project(CMCMakeModule VERSION 1.0.0 LANGUAGES CXX)
+
+# 导出配置接口
+add_library(CMCMakeModule INTERFACE)
+add_library(CMCMakeModule::CMCMakeModule ALIAS CMCMakeModule)
+
+# 包含模块路径
+target_include_directories(CMCMakeModule INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+)
+```
+
+### 3.3 C++20 模块支持优化
+
+**当前问题：**
+- compiler.cmake 中的 C++20 模块标志可能导致非模块项目编译失败
+- 第89-91行的 `/interface /ifcOutput` 标志只适用于模块接口单元
+
+**改进建议：**
+```cmake
+# 将模块支持改为可选
+option(ENABLE_CXX20_MODULES "Enable C++20 module support" OFF)
+
+if(ENABLE_CXX20_MODULES AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.28")
+    set(CMAKE_CXX_SCAN_FOR_MODULES ON)
+    # ... 模块相关设置
+endif()
+```
+
+---
+
+## 阶段四：功能增强
+
+### 4.1 添加 .gitignore 文件
+
+**改进建议：**
+```gitignore
+# Build directories
+build/
+out/
+cmake-build-*/
+
+# IDE files
+.idea/
+.vscode/
+*.suo
+*.user
+
+# Generated files
+CMakeUserPresets.json
+```
+
+### 4.2 添加版本信息
+
+**改进建议：**
+- 创建 `VERSION` 文件或在 `CMakeLists.txt` 中定义版本
+- 添加 `CHANGELOG.md` 记录变更历史
+
+### 4.3 README.md 增强
+
+**改进建议：**
+- 添加模块功能描述表格
+- 添加技术要求说明（CMake 3.20+、C++20、AVX2）
+- 添加更多使用示例
+
+---
+
+## 阶段五：持续集成
+
+### 5.1 添加 GitHub Actions
+
+**改进建议：**
 ```yaml
+# .github/workflows/ci.yml
 name: CI
 on: [push, pull_request]
+
 jobs:
-  test:
+  build:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        cmake-version: ['3.19', '3.25', '3.28']
+        cmake-version: ['3.20', '3.25', '3.28']
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -202,47 +257,59 @@ jobs:
         uses: jwlawson/actions-setup-cmake@v2
         with:
           cmake-version: ${{ matrix.cmake-version }}
-      - name: Test
-        run: cmake -P test/run_tests.cmake
+      - name: Configure
+        run: cmake -B build -DCMAKE_CXX_STANDARD=20
+      - name: Build
+        run: cmake --build build
 ```
 
-> 注意：建议使用 CMake 3.19+ 作为基线版本，因为该版本引入了许多现代 CMake 特性。
-
-### 5.2 版本管理
+### 5.2 添加简单测试
 
 **改进建议：**
-- 添加版本号文件
-- 使用 Git tags 进行版本发布
-- 添加 CHANGELOG.md 记录变更
+- 创建 `test/` 目录
+- 添加验证模块加载的测试项目
 
 ---
 
 ## 具体问题速查表
 
-| 文件 | 行号 | 问题 | 严重程度 | 修复建议 |
-|------|------|------|----------|----------|
-| README.md | 42 | 拼写错误 `target_link_libraried` | 低 | 改为 `target_link_libraries` |
-| compiler.cmake | 39 | 大小写不一致 `endif(msvc)` | 低 | 改为 `endif()` |
-| compiler.cmake | 75 | 硬性依赖 tsl-robin-map | 中 | 改为可选依赖 |
-| compiler.cmake | 89-91 | C++20 模块标志可能导致编译错误 | 中 | 添加条件判断 |
-| version.cmake | 全文 | 使用过时的 add_definitions | 低 | 使用 add_compile_definitions |
-| system_bit.cmake | 全文 | 使用过时的 add_definitions | 低 | 使用 add_compile_definitions |
-| math.cmake | 全文 | 使用过时的 add_definitions | 低 | 使用 add_compile_definitions |
-| vulkan.cmake | 全文 | 使用过时的 add_definitions | 低 | 使用 add_compile_definitions |
+| 文件 | 位置 | 问题 | 优先级 | 状态 |
+|------|------|------|--------|------|
+| compiler.cmake | 第17行 | CMake 3.15 版本检查已过时 | 低 | 待处理 |
+| compiler.cmake | 第72/129行 | IF/ELSE 大小写不一致 | 低 | 待处理 |
+| compiler.cmake | 第89-91行 | C++20 模块标志应设为可选 | 中 | 待处理 |
+| vulkan.cmake | 第3-7行 | CMake 3.7 版本检查已过时 | 低 | 待处理 |
+| system_bit.cmake | 全文 | 大写命令需规范化 | 低 | 待处理 |
+| output_path.cmake | 全文 | 大写命令需规范化 | 低 | 待处理 |
+| QtCommon.cmake | 全文 | 大写命令需规范化 | 低 | 待处理 |
+| - | - | 缺少 .gitignore | 低 | 待处理 |
+| - | - | 缺少 CMakeLists.txt 入口 | 中 | 待处理 |
+| - | - | 缺少 CMakePresets.json | 低 | 待处理 |
+
+---
+
+## 已完成改进
+
+- [x] README.md: 修正拼写错误 `target_link_libraried` → `target_link_libraries`
+- [x] compiler.cmake: 修正 `endif(msvc)` → `endif()`
+- [x] LICENSE: 添加 BSD-3-Clause 许可证
+- [x] COPYING-CMAKE-SCRIPTS: 添加 BSD 许可证文件
+- [x] 全局: 将 `add_definitions()` 替换为 `add_compile_definitions()`
+- [x] vulkan.cmake: 使用 CMake 内置 FindVulkan 模块
 
 ---
 
 ## 推荐实施顺序
 
-1. **第一周**：完成阶段一的所有改进
-2. **第二周**：逐步完成阶段二的代码质量改进
-3. **第三周**：开始阶段三的功能增强
-4. **后续**：根据项目需求选择性实施阶段四和五
+1. **短期（1-2天）**：完成代码风格统一（阶段一）
+2. **中期（1周）**：简化版本检查、添加基础设施文件（阶段二、四）
+3. **长期（按需）**：架构优化和持续集成（阶段三、五）
 
 ---
 
 ## 参考资源
 
 - [Modern CMake](https://cliutils.gitlab.io/modern-cmake/)
-- [CMake Best Practices](https://cmake.org/cmake/help/latest/manual/cmake-developer.7.html)
-- [Professional CMake](https://crascit.com/professional-cmake/)
+- [CMake 3.20 Release Notes](https://cmake.org/cmake/help/latest/release/3.20.html)
+- [C++20 Modules in CMake](https://cmake.org/cmake/help/latest/manual/cmake-cxxmodules.7.html)
+- [CMake Presets](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html)
