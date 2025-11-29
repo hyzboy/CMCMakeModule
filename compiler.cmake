@@ -69,7 +69,7 @@ else()
     message(WARNING "CMake version ${CMAKE_VERSION} does not fully support C++20 modules. Consider upgrading to CMake 3.28 or later.")
 endif()
 
-IF(WIN32)
+if(WIN32)
 
     if(MSVC)
         find_package(tsl-robin-map CONFIG REQUIRED)
@@ -79,29 +79,29 @@ IF(WIN32)
             cmake_policy(SET CMP0091 NEW)
         endif()
 
-        SET(MSVC_COMMON_FLAGS "/Zc:preprocessor /arch:AVX2 /fp:fast /fp:except-")
+        set(MSVC_COMMON_FLAGS "/Zc:preprocessor /arch:AVX2 /fp:fast /fp:except-")
 
         # Rely on CMAKE_C_STANDARD/CMAKE_CXX_STANDARD for language mode, only append common flags here
-        SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MSVC_COMMON_FLAGS}")
-        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_COMMON_FLAGS}")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MSVC_COMMON_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_COMMON_FLAGS}")
 
         # MSVC C++20 module specific flags
         if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.28")
             # Enable module interface unit compilation
-            SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /interface /ifcOutput ${CMAKE_CXX_MODULE_OUTPUT_DIRECTORY}")
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /interface /ifcOutput ${CMAKE_CXX_MODULE_OUTPUT_DIRECTORY}")
         endif()
 
-        OPTION(MSVC_USE_fsanitize "USE fsanitize" OFF)
-        OPTION(MSVC_USE_SecurityDevlopmentLiftCycle "use Security Development Lifecycle (SDL)" OFF)
+        option(MSVC_USE_fsanitize "USE fsanitize" OFF)
+        option(MSVC_USE_SecurityDevlopmentLiftCycle "use Security Development Lifecycle (SDL)" OFF)
 
         if(MSVC_USE_SecurityDevlopmentLiftCycle)
-            SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /sdl")
-            SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /sdl")
+            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /sdl")
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /sdl")
         endif()
 
         if(MSVC_USE_fsanitize OR ENABLE_ASAN)
-            SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /fsanitize=address")
-            SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fsanitize=address")
+            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /fsanitize=address")
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fsanitize=address")
             message(STATUS "MSVC AddressSanitizer enabled")
         endif()
 
@@ -126,20 +126,20 @@ IF(WIN32)
         add_compile_options(/wd4996)    # sprintf/sscanf unsafe
     endif()
 
-ELSE()
-    IF(NOT ANDROID)
-        IF(APPLE)
-            SET(USE_CLANG       ON)
-        ELSE()
-            OPTION(USE_CLANG    OFF)
-        ENDIF()
+else()
+    if(NOT ANDROID)
+        if(APPLE)
+            set(USE_CLANG       ON)
+        else()
+            option(USE_CLANG    OFF)
+        endif()
 
         if(USE_CLANG)
-            SET(CMAKE_C_COMPILER /usr/bin/clang)
-            SET(CMAKE_CXX_COMPILER /usr/bin/clang++)
+            set(CMAKE_C_COMPILER /usr/bin/clang)
+            set(CMAKE_CXX_COMPILER /usr/bin/clang++)
         endif()
-    ENDIF()
-ENDIF()
+    endif()
+endif()
 
 # Unified GNU/Clang settings (applies to GCC, Clang, AppleClang on all platforms)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")

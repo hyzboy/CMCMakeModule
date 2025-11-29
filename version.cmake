@@ -22,8 +22,8 @@ message("VS Platform toolset: " ${CMAKE_VS_PLATFORM_TOOLSET})
 
 endif()
 
-MESSAGE("C Compile Features: " ${CMAKE_C_COMPILE_FEATURES})
-MESSAGE("C++ Compile Features: " ${CMAKE_CXX_COMPILE_FEATURES})
+message("C Compile Features: " ${CMAKE_C_COMPILE_FEATURES})
+message("C++ Compile Features: " ${CMAKE_CXX_COMPILE_FEATURES})
 
 # add_compile_definitions(HGL_COMPILE_C_FEATURES="${CMAKE_C_COMPILE_FEATURES}")
 # add_compile_definitions(HGL_COMPILE_CXX_FEATURES="${CMAKE_CXX_COMPILE_FEATURES}")

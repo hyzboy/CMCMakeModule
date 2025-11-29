@@ -72,12 +72,12 @@ macro(init_qt)
     set(CMAKE_AUTOUIC ON) # UI files
 endmacro()
 
-IF(CM_BUILD_QT)
-        SET(CM_QT_MAJOR_VERSION "Auto" CACHE STRING "Choose a version of Qt")
-        SET(SUPPORTED_QT_VERSION "Auto" 5 6)
-        SET_PROPERTY(CACHE CM_QT_MAJOR_VERSION PROPERTY STRINGS ${SUPPORTED_QT_VERSION})
+if(CM_BUILD_QT)
+        set(CM_QT_MAJOR_VERSION "Auto" CACHE STRING "Choose a version of Qt")
+        set(SUPPORTED_QT_VERSION "Auto" 5 6)
+        set_property(CACHE CM_QT_MAJOR_VERSION PROPERTY STRINGS ${SUPPORTED_QT_VERSION})
 
-        IF(CM_QT_MAJOR_VERSION STREQUAL "Auto")
+        if(CM_QT_MAJOR_VERSION STREQUAL "Auto")
             find_package(Qt6Widgets QUIET)
             if(NOT Qt6Widgets_FOUND)
                 find_package(Qt5Widgets QUIET)
@@ -89,7 +89,7 @@ IF(CM_BUILD_QT)
             else()
                 set(CM_QT_MAJOR_VERSION 6)
             endif()
-        ENDIF()
+        endif()
 
         add_compile_definitions("HGL_QT=${CM_QT_MAJOR_VERSION}")
 
@@ -104,7 +104,7 @@ IF(CM_BUILD_QT)
             include_directories(${Qt5Core_INCLUDES})
             add_compile_definitions(${Qt5Core_DEFINITIONS})
         else()
-            SET(CM_QT_MAJOR_VERSION "0")
+            set(CM_QT_MAJOR_VERSION "0")
         endif()
 
         init_os_bundle()
@@ -118,10 +118,10 @@ IF(CM_BUILD_QT)
         set(COMPANY "hyzgame.com")
         set(COPYRIGHT "Copyright (c) 1997-2022 hyzgame.com. All rights reserved.")
 
-        IF(CM_QT_EXTRA_STYLE)
+        if(CM_QT_EXTRA_STYLE)
             add_compile_definitions("USE_EXTRA_QT_STYLE")
-            SET(CM_QT_EXTRA_STYLE_RC_FILES  ${CMAKE_CURRENT_SOURCE_DIR}/CMQT/src/style/bb10style/qbb10brightstyle.qrc
+            set(CM_QT_EXTRA_STYLE_RC_FILES  ${CMAKE_CURRENT_SOURCE_DIR}/CMQT/src/style/bb10style/qbb10brightstyle.qrc
                                             ${CMAKE_CURRENT_SOURCE_DIR}/CMQT/src/style/bb10style/qbb10darkstyle.qrc)
-        ENDIF()
+        endif()
 
-ENDIF(CM_BUILD_QT)
+endif()
