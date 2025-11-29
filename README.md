@@ -39,6 +39,6 @@ CMake module files of CMGameEngine/ULRE
    target_link_libraries(YourProgram CMCore CMPlatform)
 
    #if you use vulkan render
-   target_link_libraried(YourProject ${RENDER_LIBRARY} ${Vulkan_LIBRARIES})
+   target_link_libraries(YourProject ${RENDER_LIBRARY} ${Vulkan_LIBRARIES})
 
 ```

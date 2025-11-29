@@ -36,8 +36,8 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.15")
             # SET(AMD_COM_LIB_RELEASE "Compressonator_MD.lib")
             message(STATUS "Using DLL runtime: MD/MDd")
         endif()
-    endif(msvc)
-endif(CMAKE_VERSION VERSION_GREATER_EQUAL "3.15")
+    endif()
+endif()
 
 # C++20 Module support (requires CMake 3.28+)
 # Check CMake version for module support
