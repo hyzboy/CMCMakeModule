@@ -10,7 +10,7 @@ macro(add_cm_library module_name project_folder)
         add_library(${module_name} SHARED ${SOURCE_FILES})
     endif()
 
-    set_property(TARGET ${module_name} PROPERTY FOLDER ${project_folder})
+    set_target_properties(${module_name} PROPERTIES FOLDER ${project_folder})
 
 endmacro()
 
@@ -21,6 +21,6 @@ macro(add_cm_plugin module_name project_folder)
 
     add_library(${module_name} SHARED ${SOURCE_FILES})
 
-    set_property(TARGET ${module_name} PROPERTY FOLDER ${project_folder})
+    set_target_properties(${module_name} PROPERTIES FOLDER ${project_folder})
 
 endmacro()
