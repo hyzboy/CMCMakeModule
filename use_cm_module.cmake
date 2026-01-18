@@ -3,6 +3,7 @@ include(system_bit)
 include(version)
 include(output_path)
 include(cm_modules)
+include(example_project)
 
 macro(use_cm_module module)
     add_subdirectory(CM${module})
