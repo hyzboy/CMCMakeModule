@@ -57,38 +57,6 @@ if(Vulkan_LIBRARIES)
     endif()
 endif()
 
-# Optionally add Vulkan SDK include and library paths from VULKAN_SDK
-# This helps projects that rely on global include/link directories.
-if(DEFINED ENV{VULKAN_SDK} AND NOT "$ENV{VULKAN_SDK}" STREQUAL "")
-    set(_VULKAN_SDK_ROOT "$ENV{VULKAN_SDK}")
-
-    if(WIN32)
-        # Include dir is fixed; lib dir depends on arch
-        set(VULKAN_SDK_INCLUDE_DIR "${_VULKAN_SDK_ROOT}/Include" CACHE PATH "Vulkan SDK include directory")
-        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-            set(VULKAN_SDK_LIBRARY_DIR "${_VULKAN_SDK_ROOT}/Lib" CACHE PATH "Vulkan SDK library directory")
-        else()
-            set(VULKAN_SDK_LIBRARY_DIR "${_VULKAN_SDK_ROOT}/Lib32" CACHE PATH "Vulkan SDK library directory")
-        endif()
-    else()
-        # Common Unix-like layouts
-        set(VULKAN_SDK_INCLUDE_DIR "${_VULKAN_SDK_ROOT}/include" CACHE PATH "Vulkan SDK include directory")
-        if(EXISTS "${_VULKAN_SDK_ROOT}/lib")
-            set(VULKAN_SDK_LIBRARY_DIR "${_VULKAN_SDK_ROOT}/lib" CACHE PATH "Vulkan SDK library directory")
-        elseif(EXISTS "${_VULKAN_SDK_ROOT}/lib64")
-            set(VULKAN_SDK_LIBRARY_DIR "${_VULKAN_SDK_ROOT}/lib64" CACHE PATH "Vulkan SDK library directory")
-        endif()
-    endif()
-
-    if(EXISTS "${VULKAN_SDK_INCLUDE_DIR}")
-        include_directories(SYSTEM ${VULKAN_SDK_INCLUDE_DIR})
-        list(APPEND CMAKE_INCLUDE_PATH "${VULKAN_SDK_INCLUDE_DIR}")
-        message(STATUS "Vulkan SDK Include: ${VULKAN_SDK_INCLUDE_DIR}")
-    endif()
-
-    if(DEFINED VULKAN_SDK_LIBRARY_DIR AND EXISTS "${VULKAN_SDK_LIBRARY_DIR}")
-        link_directories(${VULKAN_SDK_LIBRARY_DIR})
-        list(APPEND CMAKE_LIBRARY_PATH "${VULKAN_SDK_LIBRARY_DIR}")
-        message(STATUS "Vulkan SDK Library: ${VULKAN_SDK_LIBRARY_DIR}")
-    endif()
-endif()
+# Note: FindVulkan.cmake already defines Vulkan_INCLUDE_DIR and Vulkan_LIBRARY
+# as cache variables, so we don't need to create additional cache variables here.
+# If you need to inspect the paths in CMAKE-GUI, use the existing Vulkan_* variables.
