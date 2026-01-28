@@ -1,4 +1,4 @@
-macro(add_cm_library module_name project_folder)
+macro(add_cm_library module_name project_folder include_path)
     message("Create Module <" ${module_name} "> Project Folder <" ${project_folder} ">" )
 
     set(SOURCE_FILES "${ARGN}")
@@ -11,6 +11,17 @@ macro(add_cm_library module_name project_folder)
     endif()
 
     set_target_properties(${module_name} PROPERTIES FOLDER ${project_folder})
+
+    # Export include directories for consumers of this library
+    if(include_path)
+        # PRIVATE: for the library's own compilation
+        target_include_directories(${module_name} PRIVATE ${include_path})
+        # PUBLIC: for consumers of this library
+        target_include_directories(${module_name} PUBLIC
+            $<BUILD_INTERFACE:${include_path}>
+            $<INSTALL_INTERFACE:inc>
+        )
+    endif()
 
 endmacro()
 
