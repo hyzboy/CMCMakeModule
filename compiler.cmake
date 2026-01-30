@@ -60,8 +60,6 @@ endif()
 if(WIN32)
 
     if(MSVC)
-        find_package(tsl-robin-map CONFIG REQUIRED)
-
         set(MSVC_COMMON_FLAGS "/Zc:preprocessor /arch:AVX2 /fp:fast /fp:except-")
 
         # Rely on CMAKE_C_STANDARD/CMAKE_CXX_STANDARD for language mode, only append common flags here
