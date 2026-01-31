@@ -9,9 +9,6 @@ message("Build type: " ${CMAKE_BUILD_TYPE})
 
 add_compile_definitions(HGL_HOST_SYSTEM="${CMAKE_HOST_SYSTEM}")
 
-add_compile_definitions(HGL_COMPILE_C_FLAGS="${CMAKE_C_FLAGS}")
-add_compile_definitions(HGL_COMPILE_CXX_FLAGS="${CMAKE_CXX_FLAGS}")
-
 add_compile_definitions(CMAKE_VERSION="${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 
 if(MSVC)
