@@ -21,7 +21,7 @@ macro(cm_example_project_base)
     add_executable(${EXAMPLE_PROJECT_NAME} ${EXAMPLE_SOURCES})
 
     # Link common libraries
-    target_link_libraries(${EXAMPLE_PROJECT_NAME} PRIVATE CMCore CMPlatform CMUtil tsl::robin_map)
+    target_link_libraries(${EXAMPLE_PROJECT_NAME} PRIVATE CMCore CMPlatform CMUtil)
 
     # Link additional libraries if specified
     if(EXAMPLE_LIBRARIES)
