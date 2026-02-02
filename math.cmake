@@ -7,7 +7,7 @@ add_compile_definitions(GLM_FORCE_DEFAULT_ALIGNED_GENTYPES)
 
 if(WIN32)
     add_compile_definitions(GLM_FORCE_AVX2)
-    
+
     set(HGL_MATH_LIB glm::glm)
 else()
     set(HGL_MATH_LIB GLM)

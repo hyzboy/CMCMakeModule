@@ -14,7 +14,7 @@ CMake module files of CMGameEngine/ULRE
 ```
  - add the following code to project CMakeLists.txt
 ```
-   cmake_minimum_required(VERSION 3.0)
+   cmake_minimum_required(VERSION 3.28)
 
    project(YourProject)
 

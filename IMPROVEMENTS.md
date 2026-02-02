@@ -4,7 +4,7 @@
 
 ## 项目技术限定
 
-- **CMake 版本**: >= 3.20
+- **CMake 版本**: >= 3.28
 - **C++ 标准**: C++20
 - **指令集**: AVX2
 
@@ -83,7 +83,7 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.15")
     # ... CMP0091 相关代码
 endif()
 
-# CMake 3.20+ 已完全支持 CMP0091，可直接使用
+# CMake 3.28+ 已完全支持 CMP0091，可直接使用
 cmake_policy(SET CMP0091 NEW)
 ```
 
@@ -229,7 +229,7 @@ CMakeUserPresets.json
 
 **改进建议：**
 - 添加模块功能描述表格
-- 添加技术要求说明（CMake 3.20+、C++20、AVX2）
+- 添加技术要求说明（CMake 3.28+、C++20、AVX2）
 - 添加更多使用示例
 
 ---
@@ -249,7 +249,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        cmake-version: ['3.20', '3.25', '3.28']
+        cmake-version: ['3.28', '3.29', '3.30']
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -293,6 +293,11 @@ jobs:
 - [x] compiler.cmake: 移除 CMake 3.15 版本检查
 - [x] CMakePresets.json: 添加现代 CMake Presets 支持
 - [x] .gitignore: 添加项目忽略文件
+- [x] 项目: 强制要求 CMake 3.28+
+- [x] CMakePresets.json: 更新最低版本要求至 3.28
+- [x] compiler.cmake: 移除所有 CMake 3.28 版本检查（C++20 模块、MSVC 标志等）
+- [x] README.md: 更新示例代码中的 cmake_minimum_required 至 3.28
+- [x] IMPROVEMENTS.md: 更新技术限定为 CMake >= 3.28
 
 ---
 

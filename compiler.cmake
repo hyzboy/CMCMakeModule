@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# CMake 3.20+ fully supports CMP0091, enable it unconditionally
+# CMake 3.28+ fully supports CMP0091, enable it unconditionally
 cmake_policy(SET CMP0091 NEW)
 
 if(MSVC)
@@ -28,33 +28,29 @@ if(MSVC)
     endif()
 endif()
 
-# C++20 Module support (requires CMake 3.28+)
-if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.28")
-    message(STATUS "CMake version ${CMAKE_VERSION} supports C++20 modules")
-    
-    # Enable experimental C++20 module support
-    set(CMAKE_EXPERIMENTAL_CXX_MODULE_CMAKE_API "2182bf5c-ef0d-489a-91da-49dbc3090d2a")
-    set(CMAKE_EXPERIMENTAL_CXX_MODULE_DYNDEP ON)
-    
-    # Configure module output directories
-    set(CMAKE_CXX_MODULE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/modules")
-    
-    # Enable scanning for module dependencies
-    if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-        # MSVC-specific module settings
-        set(CMAKE_CXX_SCAN_FOR_MODULES ON)
-        message(STATUS "C++20 modules enabled for MSVC")
-    elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        # Clang-specific module settings (requires Clang 16+)
-        set(CMAKE_CXX_SCAN_FOR_MODULES ON)
-        message(STATUS "C++20 modules enabled for Clang")
-    elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-        # GCC module support (requires GCC 11+ with -fmodules-ts)
-        set(CMAKE_CXX_SCAN_FOR_MODULES ON)
-        message(STATUS "C++20 modules enabled for GCC")
-    endif()
-else()
-    message(WARNING "CMake version ${CMAKE_VERSION} does not fully support C++20 modules. Consider upgrading to CMake 3.28 or later.")
+# C++20 Module support (CMake 3.28+ required)
+message(STATUS "CMake version ${CMAKE_VERSION} supports C++20 modules")
+
+# Enable experimental C++20 module support
+set(CMAKE_EXPERIMENTAL_CXX_MODULE_CMAKE_API "2182bf5c-ef0d-489a-91da-49dbc3090d2a")
+set(CMAKE_EXPERIMENTAL_CXX_MODULE_DYNDEP ON)
+
+# Configure module output directories
+set(CMAKE_CXX_MODULE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/modules")
+
+# Enable scanning for module dependencies
+if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    # MSVC-specific module settings
+    set(CMAKE_CXX_SCAN_FOR_MODULES ON)
+    message(STATUS "C++20 modules enabled for MSVC")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    # Clang-specific module settings (requires Clang 16+)
+    set(CMAKE_CXX_SCAN_FOR_MODULES ON)
+    message(STATUS "C++20 modules enabled for Clang")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    # GCC module support (requires GCC 11+ with -fmodules-ts)
+    set(CMAKE_CXX_SCAN_FOR_MODULES ON)
+    message(STATUS "C++20 modules enabled for GCC")
 endif()
 
 if(WIN32)
@@ -66,11 +62,9 @@ if(WIN32)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MSVC_COMMON_FLAGS}")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_COMMON_FLAGS}")
 
-        # MSVC C++20 module specific flags (requires CMake 3.28+)
-        if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.28")
-            # Enable module interface unit compilation
-            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /interface /ifcOutput ${CMAKE_CXX_MODULE_OUTPUT_DIRECTORY}")
-        endif()
+        # MSVC C++20 module specific flags
+        # Enable module interface unit compilation
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /interface /ifcOutput ${CMAKE_CXX_MODULE_OUTPUT_DIRECTORY}")
 
         option(MSVC_USE_fsanitize "USE fsanitize" OFF)
         option(MSVC_USE_SecurityDevlopmentLiftCycle "use Security Development Lifecycle (SDL)" OFF)
@@ -125,14 +119,12 @@ endif()
 # Unified GNU/Clang settings (applies to GCC, Clang, AppleClang on all platforms)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
     # C++20 module support for GCC/Clang
-    if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.28")
-        if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-            # GCC requires -fmodules-ts flag for module support
-            add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fmodules-ts>)
-        elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-            # Clang 16+ has better module support
-            # Module flags are handled automatically by CMake 3.28+
-        endif()
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+        # GCC requires -fmodules-ts flag for module support
+        add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fmodules-ts>)
+    elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        # Clang 16+ has better module support
+        # Module flags are handled automatically by CMake 3.28+
     endif()
 
     # Common ISA/FP
