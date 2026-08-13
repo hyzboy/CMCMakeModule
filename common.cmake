@@ -3,6 +3,27 @@
 # Find abseil-cpp package
 find_package(absl CONFIG REQUIRED)
 
+# CMCore 的公开头文件（OrderedSet.h 等）直接包含 absl 头文件，而
+# use_cm_module 会把各模块 inc 目录全局加入所有 target 的 include 路径。
+# 因此必须把 absl 的 include 目录也全局暴露，否则链接了 CMCore 但未
+# 直接链接 absl 的 target 在编译时会报 C1083。
+set(_ABSL_GLOBAL_INCLUDE_DIRS "")
+foreach(_absl_tgt IN ITEMS absl::btree absl::flat_hash_map absl::node_hash_map)
+    if(TARGET ${_absl_tgt})
+        get_target_property(_absl_incs ${_absl_tgt} INTERFACE_INCLUDE_DIRECTORIES)
+        if(_absl_incs)
+            list(APPEND _ABSL_GLOBAL_INCLUDE_DIRS ${_absl_incs})
+        endif()
+    endif()
+endforeach()
+list(REMOVE_DUPLICATES _ABSL_GLOBAL_INCLUDE_DIRS)
+if(_ABSL_GLOBAL_INCLUDE_DIRS)
+    include_directories(SYSTEM ${_ABSL_GLOBAL_INCLUDE_DIRS})
+endif()
+unset(_ABSL_GLOBAL_INCLUDE_DIRS)
+unset(_absl_tgt)
+unset(_absl_incs)
+
 # vcpkg's absl target exports may include MSVC-specific ignore flags in
 # INTERFACE link properties; strip them for non-MSVC toolchains.
 if(NOT MSVC)
