@@ -106,7 +106,7 @@ else()
         if(APPLE)
             set(USE_CLANG       ON)
         else()
-            option(USE_CLANG    OFF)
+            option(USE_CLANG    "Use clang/clang++ instead of the default GNU compiler" OFF)
         endif()
 
         if(USE_CLANG)
