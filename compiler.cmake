@@ -5,6 +5,17 @@ option(USE_STATIC_CRT "Use static C runtime (MSVC: /MT, others: -static-libgcc -
 option(ENABLE_ASAN "Enable AddressSanitizer on supported compilers" OFF)
 option(ENABLE_UBSAN "Enable UndefinedBehaviorSanitizer on supported compilers" OFF)
 
+# Static analysis toggles (opt-in; default builds stay warning-compatible)
+option(ENABLE_STRICT_WARNINGS "Enable /W4 (MSVC) or -Wall -Wextra -Wpedantic (GCC/Clang)" OFF)
+option(ENABLE_CLANG_TIDY "Run clang-tidy as part of the build" OFF)
+
+if(ENABLE_CLANG_TIDY)
+    find_program(CLANG_TIDY_EXE NAMES clang-tidy REQUIRED
+                 DOC "Path to clang-tidy used when ENABLE_CLANG_TIDY is ON")
+    set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
+    message(STATUS "clang-tidy enabled: ${CLANG_TIDY_EXE}")
+endif()
+
 # Global language standards (prefer CMake variables over hardcoded -std or /std flags)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -99,6 +110,11 @@ if(WIN32)
         add_compile_options(/wd4805)    # unsafe compare
         add_compile_options(/wd4819)    # ansi->unicode
         add_compile_options(/wd4996)    # sprintf/sscanf unsafe
+
+        if(ENABLE_STRICT_WARNINGS)
+            add_compile_options(/W4)
+            message(STATUS "Strict warnings enabled (/W4)")
+        endif()
     endif()
 
 else()
@@ -129,6 +145,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
 
     # Common ISA/FP
     add_compile_options(-mavx2 -ffast-math)
+
+    if(ENABLE_STRICT_WARNINGS)
+        add_compile_options(-Wall -Wextra -Wpedantic)
+        message(STATUS "Strict warnings enabled (-Wall -Wextra -Wpedantic)")
+    endif()
 
     # Config-specific optimization and debug info
     if(WIN32)
